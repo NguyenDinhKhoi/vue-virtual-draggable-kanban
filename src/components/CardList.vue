@@ -14,8 +14,14 @@
     :items="cardsData"
     group="cards"
     ghostClass="ghost"
+    v-slot="item"
   >
-
+  <span
+      class="element-card" 
+      @click="togglePopup(item)"
+    >
+      {{ item.name }}
+    </span>
   </virtual-scroll>
   <!-- </draggable> -->
 </template>

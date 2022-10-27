@@ -2,14 +2,7 @@
   <div class="root" ref="root" :style="rootStyle">
     <div class="viewport" ref="viewport" :style="viewportStyle">
       <div class="spacer" ref="spacer" :style="spacerStyle">
-        <span
-      class="element-card"
-      v-for="(card, index) in visibleItems"
-      :key="index"
-      @click="togglePopup(card)"
-    >
-      {{ card.name }}
-    </span>
+          <slot v-for="(item, index) in visibleItems" :item="item" :key="index"></slot>
       </div>
     </div>
   </div>
