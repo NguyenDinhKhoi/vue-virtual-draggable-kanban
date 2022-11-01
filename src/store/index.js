@@ -6,9 +6,16 @@ import rootGetters from "./getters.js";
 
 function loopData() {
   let arr=[];
-  for(let i=1;i<=1000000;i++){
+  for(let i=1;i<=10000;i++){
     arr.push({
       listId: 1,
+      id: i,
+      name:`card ${i}`,
+    });
+  }
+  for(let i=1;i<=1100;i++){
+    arr.push({
+      listId: 2,
       id: i,
       name:`card ${i}`,
     });

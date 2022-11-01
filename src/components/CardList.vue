@@ -9,17 +9,8 @@
     :data-sources="items"
     >
   </draggable-virtual-list> -->
-  <virtual-scroll
-    :options="{ group: 'cards' }"
-    :items="cardsData"
-    group="cards"
-    ghostClass="ghost"
-    v-slot="item"
-  >
-  <span
-      class="element-card" 
-      @click="togglePopup(item)"
-    >
+  <virtual-scroll :items="cards" v-slot="{item}">
+    <span class="element-card" @click="togglePopup(item)">
       {{ item.name }}
     </span>
   </virtual-scroll>
@@ -40,11 +31,12 @@ export default {
   data() {
     return {
       cardsData: this.$store.getters["cards"],
-      cardFilteredByListId : this.$store.getters["cards"],
+      cardFilteredByListId: this.$store.getters["cards"],
     };
   },
   methods: {
     togglePopup(data) {
+      console.dir(data);
       const currentData = {
         listId: this.listId,
         listName: this.listName,

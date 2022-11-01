@@ -1,45 +1,26 @@
 <template>
   <div class="root" ref="root" :style="rootStyle">
     <div class="viewport" ref="viewport" :style="viewportStyle">
-      <div class="spacer" ref="spacer" :style="spacerStyle">
+      <!-- <div class="spacer" ref="spacer" :style="spacerStyle">
           <slot v-for="(item, index) in visibleItems" :item="item" :key="index"></slot>
-      </div>
+      </div> -->
+      <VueDraggableNext class="spacer" ref="spacer" :style="spacerStyle" style="min-height:400px"
+        :options="{ group: 'cards' }" group="cards" ghostClass="ghost" v-bind="dragOptions" @end="handleEndDrag()">
+        <slot v-for="(item, index) in visibleItems" :item="item" :key="index"></slot>
+      </VueDraggableNext>
     </div>
   </div>
 </template>
 <script>
-// https://dev.to/adamklein/build-your-own-virtual-scroll-part-i-11ib
-// define a mixin object
-var passiveSupportMixin = {
-  methods: {
-    // This snippet is taken straight from https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-    // It will only work on browser so if you are using in an SSR environment, keep your eyes open
-    doesBrowserSupportPassiveScroll() {
-      let passiveSupported = false;
-
-      try {
-        const options = {
-          get passive() {
-            // This function will be called when the browser
-            //   attempts to access the passive property.
-            passiveSupported = true;
-            return false;
-          },
-        };
-
-        window.addEventListener("test", null, options);
-        window.removeEventListener("test", null, options);
-      } catch (err) {
-        passiveSupported = false;
-      }
-      return passiveSupported;
-    },
-  },
-};
+import { VueDraggableNext } from "vue-draggable-next";
+import passiveSupportMixin from "../mixins/passiveSupportMixin.js";
 
 export default {
+  components: {
+    VueDraggableNext
+  },
   mixins: [passiveSupportMixin],
-  props : ["items"],
+  props: ["items"],
   data() {
     return {
       // A bunch of items with numbers from 1 to N, should be a props ideally
@@ -132,7 +113,8 @@ export default {
     I am working on the different height version
     */
     calculateInitialRowHeight() {
-      const children = this.$refs.spacer.children;
+      // const children = this.$refs.spacer.children;
+      const children = this.$refs.spacer.$el.children;
       let largestHeight = 0;
       for (let i = 0; i < children.length; i++) {
         if (children[i].offsetHeight > largestHeight) {
@@ -140,9 +122,21 @@ export default {
         }
       }
       return largestHeight;
+    },
+    /**Draggable option */
+    dragOptions() {
+      return {
+        animation: "200",
+        ghostClass: "ghost",
+        group: "kanban-board-list-items"
+        // disabled: this.isEditing || !this.shouldAllowTaskItemsReorder
+      };
+    },
+    handleEndDrag() {
+
     }
   },
-mounted() {
+  mounted() {
     this.$refs.root.addEventListener(
       "scroll",
       this.handleScroll,
@@ -197,7 +191,7 @@ header {
   overflow-y: auto;
 }
 
-.spacer > div {
+.spacer>div {
   padding: 0.5rem 0rem;
   border: 1px solid #f5f5f5;
 }
