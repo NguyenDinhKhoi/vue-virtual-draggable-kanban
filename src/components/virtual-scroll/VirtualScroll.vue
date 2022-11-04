@@ -14,7 +14,7 @@
 </template>
 <script>
 import { VueDraggableNext } from "vue-draggable-next";
-import passiveSupportMixin from "../mixins/passiveSupportMixin.js";
+import passiveSupportMixin from "./mixins/passiveSupportMixin.js";
 
 export default {
   components: {

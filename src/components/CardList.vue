@@ -19,7 +19,7 @@
 
 <script>
 // import { VueDraggableNext } from "vue-draggable-next";
-import VirtualScroll from "@/components/VirtualScroll";
+import VirtualScroll from "@/components/virtual-scroll/VirtualScroll";
 // import DraggableVirtualList from 'vue-draggable-virtual-scroll-list';
 export default {
   props: ["listId", "listName"],
