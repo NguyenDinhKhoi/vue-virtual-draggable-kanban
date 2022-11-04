@@ -140,7 +140,7 @@ export default {
 }
 
 .list-content {
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   position: relative;
   display: flex;
   flex-direction: column;

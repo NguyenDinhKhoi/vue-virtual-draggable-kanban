@@ -1,11 +1,12 @@
+<!-- eslint-disable vue/no-mutating-props -->
 <template>
   <div class="root" ref="root" :style="rootStyle">
     <div class="viewport" ref="viewport" :style="viewportStyle">
       <!-- <div class="spacer" ref="spacer" :style="spacerStyle">
           <slot v-for="(item, index) in visibleItems" :item="item" :key="index"></slot>
       </div> -->
-      <VueDraggableNext class="spacer" ref="spacer" :style="spacerStyle" style="min-height:400px"
-        :options="{ group: 'cards' }" group="cards" ghostClass="ghost" v-bind="dragOptions" @end="handleEndDrag()">
+      <VueDraggableNext v-model="items" class="spacer" ref="spacer" :style="spacerStyle" :options="{ group: 'cards' }"
+        group="cards" ghostClass="ghost" v-bind="dragOptions" @end="handleEndDrag(items)" style="min-height:400px">
         <slot v-for="(item, index) in visibleItems" :item="item" :key="index"></slot>
       </VueDraggableNext>
     </div>
@@ -27,12 +28,12 @@ export default {
       // Total height of the root which contains all the list items in px
       rootHeight: 400,
       // Height of each row, give it an initial value but this gets calculated dynamically on mounted
-      rowHeight: 30,
+      rowHeight: 60,
       // Current scroll top position, we update this inside the scroll event handler
       scrollTop: 0,
       // Extra padding at the top and bottom so that the items transition smoothly
       // Think of it as extra items just before the viewport starts and just after the viewport ends
-      nodePadding: 20,
+      nodePadding: 0,
     };
   },
   computed: {
@@ -40,6 +41,9 @@ export default {
     Total height of the viewport = number of items in the array x height of each item
     */
     viewportHeight() {
+      //console.log('viewportHeight total item :' + this.itemCount);
+      console.log('viewportHeight rowHeight item :' + this.rowHeight);
+      //console.log('viewportHeight total length :' + this.itemCount * this.rowHeight);
       return this.itemCount * this.rowHeight;
     },
     /**
@@ -73,6 +77,7 @@ export default {
       );
     },
     itemCount() {
+      //console.log('itemCount change');
       return this.items.length;
     },
     /**
@@ -98,7 +103,8 @@ export default {
     },
     rootStyle() {
       return {
-        height: this.rootHeight + "px",
+        // height: this.rootHeight + "px",
+        maxHeight: this.rootHeight + "px",
         overflow: "auto",
       };
     },
@@ -115,12 +121,16 @@ export default {
     calculateInitialRowHeight() {
       // const children = this.$refs.spacer.children;
       const children = this.$refs.spacer.$el.children;
-      let largestHeight = 0;
+      // console.log('children moutned : ',this.$refs.spacer.$el.children);
+      // console.log(children[0])
+      let largestHeight = 1;
       for (let i = 0; i < children.length; i++) {
         if (children[i].offsetHeight > largestHeight) {
-          largestHeight = children[i].offsetHeight;
+          // + 10 = add thêm height để hiển thị
+          largestHeight = children[i].offsetHeight + 10;
         }
       }
+      // console.log('Largest height : ',largestHeight);
       return largestHeight;
     },
     /**Draggable option */
@@ -132,26 +142,32 @@ export default {
         // disabled: this.isEditing || !this.shouldAllowTaskItemsReorder
       };
     },
-    handleEndDrag() {
-
-    }
+    initCalculateInitialRowHeight() {
+      // Calculate that initial row height dynamically
+      const largestHeight = this.calculateInitialRowHeight();
+      //console.log(largestHeight)
+      this.rowHeight =
+        typeof largestHeight !== "undefined" && largestHeight !== null
+          ? largestHeight
+          : this.rowHeight;
+    },
+    handleEndDrag(){}
   },
   mounted() {
+    //console.log("mounted again");
     this.$refs.root.addEventListener(
       "scroll",
       this.handleScroll,
       this.doesBrowserSupportPassiveScroll() ? { passive: true } : false,
     );
-    // Calculate that initial row height dynamically
-    const largestHeight = this.calculateInitialRowHeight();
-    this.rowHeight =
-      typeof largestHeight !== "undefined" && largestHeight !== null
-        ? largestHeight
-        : 30;
+    this.initCalculateInitialRowHeight();
   },
   unmounted() {
     this.$refs.root.removeEventListener("scroll", this.handleScroll);
   },
+  updated() {
+    this.initCalculateInitialRowHeight();
+  }
 };
 </script>
 <style scoped>
